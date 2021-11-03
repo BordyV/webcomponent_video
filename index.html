@@ -7,7 +7,14 @@
 </head>
 
 <body>
-    <my-player id="player" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
+    <style>
+        body {
+            background: rgb(94, 89, 177);
+            background: linear-gradient(90deg, rgba(94, 89, 177, 1) 5%, rgba(199, 121, 121, 1) 100%, rgba(0, 212, 255, 1) 100%);
+        }
+    </style>
+    <my-player id="player" width-size="65%"
+        src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
     </my-player>
     <!-- <button onclick="play()">PLAY DEPUIS INDEX.HTML</button>
     <script>
@@ -16,51 +23,6 @@
             p.play();
         }
     </script> -->
-    <!--
-    <video id="player" controls
-    src="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4">
-        <br>
-    </video>
-    <button id="play" onclick="play()">PLAY</button>
-    <button id="pause" onclick="pause()">PAUSE</button>
-    <button onclick="getInfo()">GET INFO</button>
-    <button onclick="avance10s()">+10s</button>
-    <button onclick="vitesse4x()" >Vitesse 4x</button>
-
-
-    <script>
-        let player = document.querySelector("#player");
-
-        player.ontimeupdate = () => {
-            console.log("Temps courant = " + player.currentTime)
-        }
-
-        player.onended = () => {
-            console.log("video terminée");
-        }
-
-        function play() {
-            player.play();
-        }
-
-        function pause() {
-            player.pause();
-        }
-
-        function avance10s() {
-            player.currentTime += 10;
-        }
-
-        function vitesse4x() {
-            player.playbackRate = 4;
-        }
-
-        function getInfo() {
-            console.log("Durée de la vidéo : " + player.duration);
-            console.log("Temps courant : " + player.currentTime);
-        }
-    </script>
-    -->
 </body>
 
 </html>

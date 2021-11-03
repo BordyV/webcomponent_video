@@ -53,7 +53,8 @@ figure {
       0 22.3px 17.9px rgba(0, 0, 0, 0.072),
       0 41.8px 33.4px rgba(0, 0, 0, 0.086),
       0 100px 80px rgba(0, 0, 0, 0.12);
-    width: 65%;
+      /**valeur par défaut si rien n'est sélectionné */
+      width: 65%;
   }
   
   video {
@@ -81,10 +82,15 @@ figure {
     grid-template-columns: 35px 50px 50px 50px 30px auto 50px 20px;
   }
 
-  #figcaptionAudio {
-      padding-bottom : 25px;
-    grid-template-columns: 35px 50px 50px 50px 30px auto 50px 20px;
+  figcaption#figcaptionCanvas canvas {
+    margin-left: auto;
+    margin-right: auto;
+  }
 
+  #figcaptionAudio {
+      text-align:center;
+    padding-bottom : 25px;
+    grid-template-columns: auto 50px 50px 50px 50px 50px 50px auto;
   }
 
   button {
@@ -99,7 +105,7 @@ figure {
 `;
 
 let template = /*html*/`
-<figure>
+<figure id="figureVideo">
 <video id="player" crossorigin="anonymous">
   <br>  
   </video>
@@ -121,7 +127,7 @@ let template = /*html*/`
   <button id="info">ℹ️</button>
 
   </figcaption>
-  <figcaption>
+  <figcaption id="figcaptionCanvas">
     <canvas id="canvas" height=100></canvas>
   </figcaption>
   
@@ -129,27 +135,28 @@ let template = /*html*/`
     <webaudio-knob id="balance" min=-1 max=1 value=0 step="0.01" 
     tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">balance</webaudio-knob>
     
-    <webaudio-knob id="gain0" min=-30 max=30 value=0 step="1" 
+    <webaudio-knob id="gain0" min="-30" max="30" value="0" step="1" 
         tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">60Hz</webaudio-knob>
     
-    <webaudio-knob id="gain1" min=-30 max=30 value=0 step="1" 
+    <webaudio-knob id="gain1" min="-30" max="30" value="0" step="1" 
         tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">170Hz</webaudio-knob>
     
-    <webaudio-knob id="gain2" min=-30 max=30 value=0 step="1" 
+    <webaudio-knob id="gain2" min="-30" max="30" value="0" step="1" 
         tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">350Hz</webaudio-knob>
         
-    <webaudio-knob id="gain3" min=-30 max=30 value=0 step="1" 
+    <webaudio-knob id="gain3" min="-30" max="30" value="0" step="1" 
         tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">1000Hz</webaudio-knob>
         
-    <webaudio-knob id="gain4" min=-30 max=30 value=0 step="1" 
+    <webaudio-knob id="gain4" min="-30" max="30" value="0" step="1" 
         tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">3500Hz</webaudio-knob>
     
         
-    <webaudio-knob id="gain5" min=-30 max=30 value=0 step="1"
+    <webaudio-knob id="gain5" min="-30" max="30" value="0" step="1"
         tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">10000Hz</webaudio-knob>
          
-         <label>60Hz</label>
-    <input type="range" value="0" step="1" min="-30" max="30" oninput="changeGain(this.value, 0);"></input>
+    <webaudio-knob id="masterGain" min="0" max="10" value="10" step="0.1"
+        tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">Master Gain</webaudio-knob>
+         
   </figcaption>
   
 </figure>
@@ -215,9 +222,12 @@ class MyVideoPlayer extends HTMLElement {
 
         this.canvas = this.shadowRoot.querySelector("#canvas");
         this.player = this.shadowRoot.querySelector("#player");
+        this.filters = [];
 
-        // récupération de l'attribut HTML
+        // récupération des attributs HTML
         this.player.src = this.getAttribute("src");
+        let widthSize = this.getAttribute("width-size");
+        this.shadowRoot.querySelector("#figureVideo").style.width = widthSize;
 
         // déclarer les écouteurs sur les boutons
         this.definitEcouteurs();
@@ -238,10 +248,10 @@ class MyVideoPlayer extends HTMLElement {
             this.playpause();
         }
         this.shadowRoot.querySelector("#avance10").onclick = () => {
-            this.player.currentTime += parseFloat("10.0");
+            this.avance10();
         }
         this.shadowRoot.querySelector("#recule10").onclick = () => {
-            this.player.currentTime -= parseFloat("10.0");
+            this.recule10();
         }
         this.shadowRoot.querySelector("#vitesse-select").onclick = (event) => {
             this.player.playbackRate = this.shadowRoot.querySelector("#vitesse-select").value;
@@ -266,7 +276,7 @@ class MyVideoPlayer extends HTMLElement {
         }
         this.shadowRoot.querySelector("#volume").oninput = (event) => {
             const vol = parseFloat(event.target.value);
-            this.player.volume = vol;
+            this.changeVolume(vol);
         }
         this.shadowRoot.querySelector("#close").onclick = (event) => {
             this.shadowRoot.querySelector("#myModal").style.display = "none";
@@ -276,20 +286,32 @@ class MyVideoPlayer extends HTMLElement {
             this.stereoPanner.pan.value = value;
         }
         this.shadowRoot.querySelector("#gain0").oninput = (event) => {
-            var value = parseFloat(event.target.value);
-            this.changeGain(this.value, 0);
+            var value = event.target.value;
+            this.changeGain(value, 0);
         }
         this.shadowRoot.querySelector("#gain1").oninput = (event) => {
-            var value = parseFloat(event.target.value);
-            this.changeGain(this.value, 1);
+            var value = event.target.value;
+            this.changeGain(value, 1);
         }
         this.shadowRoot.querySelector("#gain2").oninput = (event) => {
-            var value = parseFloat(event.target.value);
-            this.changeGain(this.value, 2);
+            var value = event.target.value;
+            this.changeGain(value, 2);
         }
         this.shadowRoot.querySelector("#gain3").oninput = (event) => {
-            var value = parseFloat(event.target.value);
-            this.changeGain(this.value, 3);
+            var value = event.target.value;
+            this.changeGain(value, 3);
+        }
+        this.shadowRoot.querySelector("#gain4").oninput = (event) => {
+            var value = event.target.value;
+            this.changeGain(value, 4);
+        }
+        this.shadowRoot.querySelector("#gain5").oninput = (event) => {
+            var value = event.target.value;
+            this.changeGain(value, 5);
+        }
+        this.shadowRoot.querySelector("#masterGain").oninput = (event) => {
+            var value = event.target.value;
+            this.changeMasterGain(value);
         }
         // window.onclick = (event) => {
         //     let modal = this.shadowRoot.querySelector("#myModal");
@@ -324,14 +346,45 @@ class MyVideoPlayer extends HTMLElement {
                 this.bufferLength = this.analyser.frequencyBinCount;
                 this.dataArray = new Uint8Array(this.bufferLength);
 
-                this.sourceNode.connect(this.analyser);
-                this.analyser.connect(this.audioContext.destination);
+                // this.sourceNode.connect(this.analyser);
+                // this.analyser.connect(this.audioContext.destination);
 
                 this.stereoPanner = this.audioContext.createStereoPanner();
 
                 // connect nodes together
-                this.sourceNode.connect(this.stereoPanner);
-                this.stereoPanner.connect(this.audioContext.destination);
+                // this.sourceNode.connect(this.stereoPanner);
+                // this.stereoPanner.connect(this.audioContext.destination);
+
+
+                // Set filters
+                [60, 170, 350, 1000, 3500, 10000].forEach((freq, i) => {
+                    this.eq = this.audioContext.createBiquadFilter();
+                    this.eq.frequency.value = freq;
+                    this.eq.type = "peaking";
+                    this.eq.gain.value = 0;
+                    this.filters.push(this.eq);
+                });
+
+                // Connect filters in serie
+                this.sourceNode.connect(this.filters[0]);
+                for (var i = 0; i < this.filters.length - 1; i++) {
+                    this.filters[i].connect(this.filters[i + 1]);
+                }
+
+                // Master volume is a gain node
+                this.masterGain = this.audioContext.createGain();
+                this.masterGain.value = 1;
+
+
+                // connect the last filter to the speakers
+                this.filters[this.filters.length - 1].connect(this.masterGain);
+
+                // for stereo balancing, split the signal
+                // connect master volume output to the panner
+                this.masterGain.connect(this.stereoPanner);
+                this.stereoPanner.connect(this.analyser);
+                this.analyser.connect(this.audioContext.destination);
+
                 clearInterval(interval);
             }
         }, 500);
@@ -414,11 +467,28 @@ class MyVideoPlayer extends HTMLElement {
     pause() {
         this.player.pause();
     }
-
+    avance10() {
+        this.player.currentTime += parseFloat("10.0");
+    }
+    recule10() {
+        this.player.currentTime -= parseFloat("10.0");
+    }
+    changeVolume(vol) {
+        this.player.volume = vol;
+    }
     changeGain(sliderVal, nbFilter) {
         var value = parseFloat(sliderVal);
-        filters[nbFilter].gain.value = value;
+        if (isFinite(value)) {
+            this.filters[nbFilter].gain.value = value;
+            console.log(this.filters[nbFilter].gain.value)
+
+        }
     }
+    changeMasterGain(sliderVal) {
+        var value = parseFloat(sliderVal);
+        this.masterGain.gain.value = value / 10;
+    }
+
 }
 
 customElements.define("my-player", MyVideoPlayer);
