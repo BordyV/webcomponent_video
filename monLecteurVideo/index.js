@@ -60,6 +60,9 @@ figure {
     display: block;
     width: 100%;
   }
+  canvas {
+      width: 30%
+  }
   progress {
       width: 100%
   }
@@ -70,8 +73,18 @@ figure {
     display: grid;
     grid-gap: 1rem;
     /* play +10 vitessex4 volume progressbar timing info*/
-    grid-template-columns: 35px 50px 50px 50px 30px auto 50px 20px;
     padding: .5rem;
+  }
+
+  figcaption#figcaptionVideo {
+    /* play +10 vitessex4 volume progressbar timing info*/
+    grid-template-columns: 35px 50px 50px 50px 30px auto 50px 20px;
+  }
+
+  #figcaptionAudio {
+      padding-bottom : 25px;
+    grid-template-columns: 35px 50px 50px 50px 30px auto 50px 20px;
+
   }
 
   button {
@@ -87,10 +100,10 @@ figure {
 
 let template = /*html*/`
 <figure>
-<video id="player">
+<video id="player" crossorigin="anonymous">
   <br>  
   </video>
-  <figcaption>
+  <figcaption id="figcaptionVideo">
   <button aria-label="Play" id="playPause">▶️</button>
   <button id="recule10">-10s</button>
   <button id="avance10">+10s</button>
@@ -101,15 +114,47 @@ let template = /*html*/`
     <option value="4">x4</option>
   </select>
   <webaudio-knob id="volume" min=0 max=1 value=0.5 step="0.01" 
-         tooltip="%s" diameter="20" src="./assets/Aqua.png" sprites="100"></webaudio-knob>
+         tooltip="%s" diameter="30" src="./assets/Aqua.png" sprites="100"></webaudio-knob>
 
   <progress id="progress" max="100" value="0">Progress</progress>
   <label id="timer" for="progress" role="timer">0min0</label>
   <button id="info">ℹ️</button>
 
   </figcaption>
+  <figcaption>
+    <canvas id="canvas" height=100></canvas>
+  </figcaption>
+  
+  <figcaption id="figcaptionAudio">
+    <webaudio-knob id="balance" min=-1 max=1 value=0 step="0.01" 
+    tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">balance</webaudio-knob>
+    
+    <webaudio-knob id="gain0" min=-30 max=30 value=0 step="1" 
+        tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">60Hz</webaudio-knob>
+    
+    <webaudio-knob id="gain1" min=-30 max=30 value=0 step="1" 
+        tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">170Hz</webaudio-knob>
+    
+    <webaudio-knob id="gain2" min=-30 max=30 value=0 step="1" 
+        tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">350Hz</webaudio-knob>
+        
+    <webaudio-knob id="gain3" min=-30 max=30 value=0 step="1" 
+        tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">1000Hz</webaudio-knob>
+        
+    <webaudio-knob id="gain4" min=-30 max=30 value=0 step="1" 
+        tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">3500Hz</webaudio-knob>
+    
+        
+    <webaudio-knob id="gain5" min=-30 max=30 value=0 step="1"
+        tooltip="%s" diameter="50" src="./assets/LittlePhatty.png" sprites="100">10000Hz</webaudio-knob>
+         
+         <label>60Hz</label>
+    <input type="range" value="0" step="1" min="-30" max="30" oninput="changeGain(this.value, 0);"></input>
+  </figcaption>
+  
 </figure>
   <br>
+  
 
 
 
@@ -131,6 +176,15 @@ let template = /*html*/`
 
 let isModalOpen = false;
 let playing = false;
+
+var audioContext;
+var stereoPanner;
+var audioCtx = window.AudioContext || window.webkitAudioContext;
+var analyser, analyserLeft, analyserRight;
+var dataArray, bufferLength;
+var dataArrayLeft, dataArrayRight;
+var pannerNode;
+var filters = [];
 
 class MyVideoPlayer extends HTMLElement {
     constructor() {
@@ -158,12 +212,19 @@ class MyVideoPlayer extends HTMLElement {
         this.shadowRoot.innerHTML = `<style>${style}</style>${template}`;
         this.fixRelativeURLs();
 
+
+        this.canvas = this.shadowRoot.querySelector("#canvas");
         this.player = this.shadowRoot.querySelector("#player");
+
         // récupération de l'attribut HTML
         this.player.src = this.getAttribute("src");
 
         // déclarer les écouteurs sur les boutons
         this.definitEcouteurs();
+
+        this.init();
+        requestAnimationFrame(() => this.visualize());
+        this.drawAnimation();
     }
 
     definitEcouteurs() {
@@ -200,6 +261,7 @@ class MyVideoPlayer extends HTMLElement {
             this.openModal(event);
         }
         this.shadowRoot.querySelector("#player").onplay = () => {
+            this.audioContext.resume();
             this.progressLoop();
         }
         this.shadowRoot.querySelector("#volume").oninput = (event) => {
@@ -208,6 +270,26 @@ class MyVideoPlayer extends HTMLElement {
         }
         this.shadowRoot.querySelector("#close").onclick = (event) => {
             this.shadowRoot.querySelector("#myModal").style.display = "none";
+        }
+        this.shadowRoot.querySelector("#balance").oninput = (event) => {
+            var value = parseFloat(event.target.value);
+            this.stereoPanner.pan.value = value;
+        }
+        this.shadowRoot.querySelector("#gain0").oninput = (event) => {
+            var value = parseFloat(event.target.value);
+            this.changeGain(this.value, 0);
+        }
+        this.shadowRoot.querySelector("#gain1").oninput = (event) => {
+            var value = parseFloat(event.target.value);
+            this.changeGain(this.value, 1);
+        }
+        this.shadowRoot.querySelector("#gain2").oninput = (event) => {
+            var value = parseFloat(event.target.value);
+            this.changeGain(this.value, 2);
+        }
+        this.shadowRoot.querySelector("#gain3").oninput = (event) => {
+            var value = parseFloat(event.target.value);
+            this.changeGain(this.value, 3);
         }
         // window.onclick = (event) => {
         //     let modal = this.shadowRoot.querySelector("#myModal");
@@ -226,8 +308,75 @@ class MyVideoPlayer extends HTMLElement {
         // }
 
     }
+
+    init() {
+        this.audioContext = new audioCtx();
+
+
+
+        const interval = setInterval(() => {
+            if (this.player) {
+
+                this.sourceNode = this.audioContext.createMediaElementSource(this.player);
+                this.analyser = this.audioContext.createAnalyser();
+
+                this.analyser.fftSize = 256;
+                this.bufferLength = this.analyser.frequencyBinCount;
+                this.dataArray = new Uint8Array(this.bufferLength);
+
+                this.sourceNode.connect(this.analyser);
+                this.analyser.connect(this.audioContext.destination);
+
+                this.stereoPanner = this.audioContext.createStereoPanner();
+
+                // connect nodes together
+                this.sourceNode.connect(this.stereoPanner);
+                this.stereoPanner.connect(this.audioContext.destination);
+                clearInterval(interval);
+            }
+        }, 500);
+
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+        this.canvasContext = this.canvas.getContext('2d');
+
+    }
+
+    visualize() {
+        if (!this.analyser) {
+            setTimeout(() => {
+                requestAnimationFrame(() => this.visualize());
+            }, 100);
+            return;
+        }
+
+        this.canvasContext.clearRect(0, 0, this.width, this.height);
+        this.analyser.getByteFrequencyData(this.dataArray);
+
+        const barWidth = this.width / this.bufferLength;
+        var barHeight;
+        var x = 0;
+        const heightScale = this.height / 128;
+
+        for (var i = 0; i < this.bufferLength; i++) {
+            barHeight = this.dataArray[i];
+            this.canvasContext.fillStyle = 'rgb(' + (barHeight + 100) + ', 150, 50)';
+            barHeight *= heightScale;
+            this.canvasContext.fillRect(x, this.height - barHeight / 2, barWidth, barHeight / 2);
+            x += barWidth + 1;
+        }
+        requestAnimationFrame(() => this.visualize());
+    }
+
+    drawAnimation() {
+        requestAnimationFrame(this.drawAnimation.bind(this));
+    }
+
+
+
     playpause() {
         if (playing) {
+            this.audioContext.resume();
             this.play();
             this.shadowRoot.querySelector("#playPause").innerHTML = "⏸️";
         } else {
@@ -247,7 +396,6 @@ class MyVideoPlayer extends HTMLElement {
         let timer = this.shadowRoot.querySelector("#timer");
 
         setInterval(() => {
-
             let minutes = Math.floor(this.player.currentTime / 60);
             let seconds = this.player.currentTime - minutes * 60;
 
@@ -259,11 +407,17 @@ class MyVideoPlayer extends HTMLElement {
 
     // API de mon composant
     play() {
+        this.audioContext.resume();
         this.player.play();
     }
 
     pause() {
         this.player.pause();
+    }
+
+    changeGain(sliderVal, nbFilter) {
+        var value = parseFloat(sliderVal);
+        filters[nbFilter].gain.value = value;
     }
 }
 
