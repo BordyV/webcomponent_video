@@ -79,7 +79,7 @@ figure {
 
   figcaption#figcaptionVideo {
     /* play +10 vitessex4 volume progressbar timing info*/
-    grid-template-columns: 35px 50px 50px 50px 30px auto 50px 20px;
+    grid-template-columns: 35px 50px 50px 50px 30px auto 50px 15px 20px;
   }
 
   figcaption#figcaptionCanvas canvas {
@@ -93,12 +93,19 @@ figure {
     grid-template-columns: auto 50px 50px 50px 50px 50px 50px auto;
   }
 
-  button {
+  button  {
     border: 0;
     display: inline;
     padding: .5rem;
     transition: opacity .25s ease-out;
     width: 100%;
+    cursor: pointer;
+  }
+  select {
+    border: 0;
+    display: inline;
+    cursor: pointer;
+
   }
   
   
@@ -110,12 +117,13 @@ let template = /*html*/`
   <br>  
   </video>
   <figcaption id="figcaptionVideo">
-  <button aria-label="Play" id="playPause">▶️</button>
-  <button id="recule10">-10s</button>
-  <button id="avance10">+10s</button>
-  <select name="vitesse" id="vitesse-select">
+  <button aria-label="Play" id="playPause" title="play/pause de la vidéo">▶️</button>
+  <button id="recule10" title="reculer de 10 secondes">-10s</button>
+  <button id="avance10" title="avancer de 10 secondes">+10s</button>
+  <select name="vitesse" id="vitesse-select" title="vitesse">
     <option value="0.5">x0.5</option>
     <option value="1" selected="selected">x1</option>
+    <option value="1.5" >x1.5</option>
     <option value="2">x2</option>
     <option value="4">x4</option>
   </select>
@@ -124,7 +132,8 @@ let template = /*html*/`
 
   <progress id="progress" max="100" value="0">Progress</progress>
   <label id="timer" for="progress" role="timer">0min0</label>
-  <button id="info">ℹ️</button>
+  <button id="info" title="info de la vidéo">ℹ️</button>
+  <button id="pictureInPicture" title="mode picture in picture">🗖</button>
 
   </figcaption>
   <figcaption id="figcaptionCanvas">
@@ -313,6 +322,9 @@ class MyVideoPlayer extends HTMLElement {
             var value = event.target.value;
             this.changeMasterGain(value);
         }
+        this.shadowRoot.querySelector("#pictureInPicture").onclick = (event) => {
+            this.togglePictureInPicture();
+        }
         // window.onclick = (event) => {
         //     let modal = this.shadowRoot.querySelector("#myModal");
 
@@ -442,6 +454,13 @@ class MyVideoPlayer extends HTMLElement {
         this.shadowRoot.querySelector("#myModal").style.display = "block";
         isModalOpen = true;
         event.stopPropagation();
+    }
+
+    togglePictureInPicture() {
+        if (this.player !== document.pictureInPictureElement)
+            this.player.requestPictureInPicture();
+        else
+            document.exitPictureInPicture();
     }
 
     progressLoop() {
