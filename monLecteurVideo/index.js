@@ -236,8 +236,13 @@ class MyVideoPlayer extends HTMLElement {
         // récupération des attributs HTML
         this.player.src = this.getAttribute("src");
         let widthSize = this.getAttribute("width-size");
-        this.shadowRoot.querySelector("#figureVideo").style.width = widthSize;
 
+        this.setWidthSizeWebComponent(widthSize);
+
+        let controllerVideo = this.getAttribute("controller-video");
+        let controllerCanvas = this.getAttribute("controller-canvas");
+        let controllerAudio = this.getAttribute("controller-audio");
+        this.setDisplayController(controllerVideo, controllerCanvas, controllerAudio);
         // déclarer les écouteurs sur les boutons
         this.definitEcouteurs();
 
@@ -249,11 +254,9 @@ class MyVideoPlayer extends HTMLElement {
     definitEcouteurs() {
         console.log("ecouteurs définis")
         this.shadowRoot.querySelector("#playPause").onclick = () => {
-            playing = !playing;
             this.playpause();
         }
         this.shadowRoot.querySelector("#player").onclick = () => {
-            playing = !playing;
             this.playpause();
         }
         this.shadowRoot.querySelector("#avance10").onclick = () => {
@@ -262,37 +265,30 @@ class MyVideoPlayer extends HTMLElement {
         this.shadowRoot.querySelector("#recule10").onclick = () => {
             this.recule10();
         }
-        this.shadowRoot.querySelector("#vitesse-select").onclick = (event) => {
-            this.player.playbackRate = this.shadowRoot.querySelector("#vitesse-select").value;
+        this.shadowRoot.querySelector("#vitesse-select").onclick = () => {
+            this.changeVitesse(this.shadowRoot.querySelector("#vitesse-select").value);
         }
         this.shadowRoot.querySelector("#info").onclick = (event) => {
-            let minutes = Math.floor(this.player.duration / 60);
-            let seconds = this.player.duration - minutes * 60;
-            let minSec = minutes + seconds / 100 + "";
-
-            console.log("Durée de la vidéo : " + minSec);
-            console.log("Temps courant : " + this.player.currentTime);
-            console.log("lien de la vidé : " + this.player.currentSrc);
-            let modalText = this.shadowRoot.querySelector("#textModal");
-            modalText.innerHTML = '<b>Durée de la vidéo : </b>' + minutes + "min" +
-                Math.round(seconds) +
-                '<b><br> Lien de la vidéo : </b>' + this.player.currentSrc;
-            this.openModal(event);
+            this.openModal();
         }
         this.shadowRoot.querySelector("#player").onplay = () => {
             this.audioContext.resume();
             this.progressLoop();
+            this.play();
+        }
+        this.shadowRoot.querySelector("#player").onpause = () => {
+            this.pause();
         }
         this.shadowRoot.querySelector("#volume").oninput = (event) => {
             const vol = parseFloat(event.target.value);
             this.changeVolume(vol);
         }
         this.shadowRoot.querySelector("#close").onclick = (event) => {
-            this.shadowRoot.querySelector("#myModal").style.display = "none";
+            this.closeModal();
         }
         this.shadowRoot.querySelector("#balance").oninput = (event) => {
             var value = parseFloat(event.target.value);
-            this.stereoPanner.pan.value = value;
+            this.changeBalance(value);
         }
         this.shadowRoot.querySelector("#gain0").oninput = (event) => {
             var value = event.target.value;
@@ -345,8 +341,6 @@ class MyVideoPlayer extends HTMLElement {
 
     init() {
         this.audioContext = new audioCtx();
-
-
 
         const interval = setInterval(() => {
             if (this.player) {
@@ -440,27 +434,32 @@ class MyVideoPlayer extends HTMLElement {
 
 
     playpause() {
+        playing = !playing;
         if (playing) {
             this.audioContext.resume();
             this.play();
-            this.shadowRoot.querySelector("#playPause").innerHTML = "⏸️";
         } else {
             this.pause();
-            this.shadowRoot.querySelector("#playPause").innerHTML = "▶️";
         }
     }
 
-    openModal(event) {
+    openModal() {
+        let minutes = Math.floor(this.player.duration / 60);
+        let seconds = this.player.duration - minutes * 60;
+        let minSec = minutes + seconds / 100 + "";
+
+        console.log("Durée de la vidéo : " + minSec);
+        console.log("Temps courant : " + this.player.currentTime);
+        console.log("lien de la vidé : " + this.player.currentSrc);
+        let modalText = this.shadowRoot.querySelector("#textModal");
+        modalText.innerHTML = '<b>Durée de la vidéo : </b>' + minutes + "min" +
+            Math.round(seconds) +
+            '<b><br> Lien de la vidéo : </b>' + this.player.currentSrc;
         this.shadowRoot.querySelector("#myModal").style.display = "block";
         isModalOpen = true;
-        event.stopPropagation();
     }
-
-    togglePictureInPicture() {
-        if (this.player !== document.pictureInPictureElement)
-            this.player.requestPictureInPicture();
-        else
-            document.exitPictureInPicture();
+    closeModal() {
+        this.shadowRoot.querySelector("#myModal").style.display = "none";
     }
 
     progressLoop() {
@@ -479,12 +478,20 @@ class MyVideoPlayer extends HTMLElement {
 
     // API de mon composant
     play() {
+        playing = true;
+        this.shadowRoot.querySelector("#playPause").innerHTML = "⏸️";
         this.audioContext.resume();
         this.player.play();
     }
-
     pause() {
+        playing = false;
+        this.shadowRoot.querySelector("#playPause").innerHTML = "▶️";
         this.player.pause();
+    }
+    changeVitesse(vitesse) {
+        this.player.playbackRate = vitesse;
+
+        this.player.currentTime += parseFloat("10.0");
     }
     avance10() {
         this.player.currentTime += parseFloat("10.0");
@@ -494,6 +501,9 @@ class MyVideoPlayer extends HTMLElement {
     }
     changeVolume(vol) {
         this.player.volume = vol;
+    }
+    changeBalance(value) {
+        this.stereoPanner.pan.value = value;
     }
     changeGain(sliderVal, nbFilter) {
         var value = parseFloat(sliderVal);
@@ -507,7 +517,37 @@ class MyVideoPlayer extends HTMLElement {
         var value = parseFloat(sliderVal);
         this.masterGain.gain.value = value / 10;
     }
+    togglePictureInPicture() {
+        if (this.player !== document.pictureInPictureElement)
+            this.player.requestPictureInPicture();
+        else
+            document.exitPictureInPicture();
+    }
 
+    setDisplayController(controllerVideo, controllerCanvas, controllerAudio) {
+        //controllerVideo
+        if (controllerVideo === "false") {
+            this.shadowRoot.querySelector("#figcaptionVideo").style.display = "none";
+        } else if (controllerVideo === "true") {
+            this.shadowRoot.querySelector("#figcaptionVideo").style.display = "grid";
+        }
+        //controllerCanvas
+        if (controllerCanvas === "false") {
+            this.shadowRoot.querySelector("#figcaptionCanvas").style.display = "none";
+        } else if (controllerCanvas === "true") {
+            this.shadowRoot.querySelector("#figcaptionCanvas").style.display = "grid";
+        }
+        //controllerAudio
+        if (controllerAudio === "false") {
+            this.shadowRoot.querySelector("#figcaptionAudio").style.display = "none";
+        } else if (controllerAudio === "true") {
+            this.shadowRoot.querySelector("#figcaptionAudio").style.display = "grid";
+        }
+    }
+
+    setWidthSizeWebComponent(widthSize) {
+        this.shadowRoot.querySelector("#figureVideo").style.width = widthSize;
+    }
 }
 
 customElements.define("my-player", MyVideoPlayer);
