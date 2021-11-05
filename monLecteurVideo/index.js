@@ -206,7 +206,6 @@ class MyVideoPlayer extends HTMLElement {
     constructor() {
         super();
 
-        console.log("BaseURL = " + getBaseURL());
         this.attachShadow({ mode: "open" });
     }
 
@@ -501,21 +500,25 @@ class MyVideoPlayer extends HTMLElement {
     }
     changeVolume(vol) {
         this.player.volume = vol;
+        this.shadowRoot.querySelector("#volume").value = vol;
     }
     changeBalance(value) {
         this.stereoPanner.pan.value = value;
+        this.shadowRoot.querySelector("#balance").value = value;
     }
     changeGain(sliderVal, nbFilter) {
         var value = parseFloat(sliderVal);
         if (isFinite(value)) {
             this.filters[nbFilter].gain.value = value;
-            console.log(this.filters[nbFilter].gain.value)
+            this.shadowRoot.querySelector("#gain" + nbFilter).value = value;
+
 
         }
     }
     changeMasterGain(sliderVal) {
         var value = parseFloat(sliderVal);
         this.masterGain.gain.value = value / 10;
+        this.shadowRoot.querySelector("#masterGain").value = sliderVal;
     }
     togglePictureInPicture() {
         if (this.player !== document.pictureInPictureElement)
