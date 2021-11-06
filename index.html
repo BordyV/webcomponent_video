@@ -12,6 +12,29 @@
             background: rgb(94, 89, 177);
             background: linear-gradient(90deg, rgba(94, 89, 177, 1) 5%, rgba(199, 121, 121, 1) 100%, rgba(0, 212, 255, 1) 100%);
         }
+
+        #ExempleApi {
+            padding: 1%;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
+            background-color: rgba(219, 218, 215, 0.5);
+            color: #000000;
+        }
+
+        #ExempleApi input[type="number"] {
+            width: 70px;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
     <!--les valeurs actuellement à true sont pas nécessaire car les fonctionnalités sont activés de bases
         on pourrait les enlever et ça ne changera pas. 
@@ -20,13 +43,87 @@
     <my-player id="player" width-size="65%" controller-video="true" controller-canvas="true" controller-audio="true"
         keyboard-listener="true" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
     </my-player>
-    <!-- <button onclick="play()">PLAY DEPUIS INDEX.HTML</button>
+    <div id="ExempleApi">
+        <h2> API du webComponent : </h2>
+        <h3> opérations video : </h3>
+        <button onclick="play()">play()</button>
+        <button onclick="pause()">pause()</button>
+        <button onclick="playpause()">playpause() </button>
+        <button onclick="avance10()">avance10() </button>
+        <button onclick="avanceX()">avanceX(<input type="number" id="avanceXInput" placeholder="secondes">) </button>
+        <button onclick="recule10()">recule10() </button>
+        <button onclick="reculeX()">reculeX(<input type="number" id="reculeXInput" placeholder="secondes">) </button>
+        <button onclick="openInfoModal()">openInfoModal() </button>
+        <button onclick="closeModal()">closeModal() </button>
+        <button onclick="changeVitesse()">changeVitesse(<input type="number" id="changeVitesseInput"
+                placeholder="vitesse">)
+        </button>
+        <button onclick="goToSecond()">goToSecond(<input type="number" id="goToSecondInput" placeholder="secondes">)
+        </button>
+
+
+    </div>
     <script>
+        window.onkeydown = function (e) {
+            if (e.keyCode == 32 && e.target == document.body) {
+                e.preventDefault();
+            }
+        };
+
+        let avanceXInput = 0;
+        let reculeXInput = 0;
+        let changeVitesseInput = 1;
+        let goToSecondInput = 0;
+
+        document.querySelector("#avanceXInput").oninput = (event) => {
+            avanceXInput = event.target.value;
+        }
+        document.querySelector("#reculeXInput").oninput = (event) => {
+            reculeXInput = event.target.value;
+        }
+        document.querySelector("#changeVitesseInput").oninput = (event) => {
+            changeVitesseInput = event.target.value;
+        }
+        document.querySelector("#goToSecondInput").oninput = (event) => {
+            goToSecondInput = event.target.value;
+        }
+
         const p = document.querySelector("#player");
         function play() {
             p.play();
         }
-    </script> -->
+        function pause() {
+            p.pause();
+        }
+        function playpause() {
+            p.playpause();
+        }
+        function avance10() {
+            p.avance10();
+        }
+        function avanceX() {
+            p.avanceX(avanceXInput);
+        }
+        function recule10() {
+            p.recule10();
+        }
+        function reculeX() {
+            p.reculeX(reculeXInput);
+        }
+        function openInfoModal() {
+            p.openInfoModal();
+        }
+        function closeModal() {
+            p.closeModal();
+        }
+        function changeVitesse() {
+            p.changeVitesse(changeVitesseInput);
+
+        }
+        function goToSecond() {
+            p.goToSecond(goToSecondInput);
+        }
+    </script>
 </body>
 
 </html>

@@ -248,7 +248,7 @@ class MyVideoPlayer extends HTMLElement {
         this.addEcouteurKeyboard();
         let keyboardListener = this.getAttribute("keyboard-listener");
         if (keyboardListener === 'false') {
-            window.onkeyup = (e) => { }
+            this.deleteEcouteurKeyBoard();
         }
 
         this.init();
@@ -273,7 +273,7 @@ class MyVideoPlayer extends HTMLElement {
             this.changeVitesse(this.shadowRoot.querySelector("#vitesse-select").value);
         }
         this.shadowRoot.querySelector("#info").onclick = (event) => {
-            this.openModal();
+            this.openInfoModal();
         }
         this.shadowRoot.querySelector("#player").onplay = () => {
             this.audioContext.resume();
@@ -362,9 +362,12 @@ class MyVideoPlayer extends HTMLElement {
             }
             //keyCode = i 
             if (e.keyCode == 73) {
-                this.openModal();
+                this.openInfoModal();
             }
         }
+    }
+    deleteEcouteurKeyBoard() {
+        window.onkeyup = () => { }
     }
 
     init() {
@@ -380,15 +383,7 @@ class MyVideoPlayer extends HTMLElement {
                 this.bufferLength = this.analyser.frequencyBinCount;
                 this.dataArray = new Uint8Array(this.bufferLength);
 
-                // this.sourceNode.connect(this.analyser);
-                // this.analyser.connect(this.audioContext.destination);
-
                 this.stereoPanner = this.audioContext.createStereoPanner();
-
-                // connect nodes together
-                // this.sourceNode.connect(this.stereoPanner);
-                // this.stereoPanner.connect(this.audioContext.destination);
-
 
                 // Set filters
                 [60, 170, 350, 1000, 3500, 10000].forEach((freq, i) => {
@@ -471,7 +466,7 @@ class MyVideoPlayer extends HTMLElement {
         }
     }
 
-    openModal() {
+    openInfoModal() {
         let minutes = Math.floor(this.player.duration / 60);
         let seconds = this.player.duration - minutes * 60;
         let minSec = minutes + seconds / 100 + "";
@@ -518,14 +513,21 @@ class MyVideoPlayer extends HTMLElement {
     }
     changeVitesse(vitesse) {
         this.player.playbackRate = vitesse;
-
-        this.player.currentTime += parseFloat("10.0");
     }
     avance10() {
         this.player.currentTime += parseFloat("10.0");
     }
+    avanceX(value) {
+        this.player.currentTime += parseFloat(value);
+    }
     recule10() {
         this.player.currentTime -= parseFloat("10.0");
+    }
+    reculeX(value) {
+        this.player.currentTime -= parseFloat(value);
+    }
+    goToSecond(value) {
+        this.player.currentTime = parseFloat(value);
     }
     changeVolume(vol) {
         this.player.volume = vol;
