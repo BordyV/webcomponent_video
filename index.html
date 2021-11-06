@@ -13,8 +13,12 @@
             background: linear-gradient(90deg, rgba(94, 89, 177, 1) 5%, rgba(199, 121, 121, 1) 100%, rgba(0, 212, 255, 1) 100%);
         }
     </style>
+    <!--les valeurs actuellement à true sont pas nécessaire car les fonctionnalités sont activés de bases
+        on pourrait les enlever et ça ne changera pas. 
+        Il faut donc les passer à false pour activer un comportement différent de celui par défaut.
+    -->
     <my-player id="player" width-size="65%" controller-video="true" controller-canvas="true" controller-audio="true"
-        src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
+        keyboard-listener="true" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
     </my-player>
     <!-- <button onclick="play()">PLAY DEPUIS INDEX.HTML</button>
     <script>

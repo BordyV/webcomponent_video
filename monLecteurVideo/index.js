@@ -244,6 +244,12 @@ class MyVideoPlayer extends HTMLElement {
         this.setDisplayController(controllerVideo, controllerCanvas, controllerAudio);
         // déclarer les écouteurs sur les boutons
         this.definitEcouteurs();
+        //on active les ecouteurs keyboard par défaut 
+        this.addEcouteurKeyboard();
+        let keyboardListener = this.getAttribute("keyboard-listener");
+        if (keyboardListener === 'false') {
+            window.onkeyup = (e) => { }
+        }
 
         this.init();
         requestAnimationFrame(() => this.visualize());
@@ -251,7 +257,6 @@ class MyVideoPlayer extends HTMLElement {
     }
 
     definitEcouteurs() {
-        console.log("ecouteurs définis")
         this.shadowRoot.querySelector("#playPause").onclick = () => {
             this.playpause();
         }
@@ -336,6 +341,30 @@ class MyVideoPlayer extends HTMLElement {
 
         // }
 
+    }
+    addEcouteurKeyboard() {
+        window.onkeyup = (e) => {
+            //keyCode = espace
+            if (e.keyCode == 32) {
+                this.playpause();
+            }
+            //keyCode = m
+            if (e.keyCode == 77) {
+                this.changeVolume(0);
+            }
+            //keyCode = d ou ->
+            if (e.keyCode == 68 || e.keyCode == 39) {
+                this.avance10();
+            }
+            //keyCode = q ou <-
+            if (e.keyCode == 81 || e.keyCode == 37) {
+                this.recule10();
+            }
+            //keyCode = i 
+            if (e.keyCode == 73) {
+                this.openModal();
+            }
+        }
     }
 
     init() {
