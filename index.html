@@ -64,15 +64,16 @@
         Il faut donc les passer à false pour activer un comportement différent de celui par défaut.
     -->
     <my-player id="player" width-size="65%" controller-video="true" controller-canvas="true" controller-audio="true"
-        keyboard-listener="true" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
+        keyboard-listener="true" start-second="0"
+        src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
     </my-player>
     <div id="ExempleApi">
         <h2> API du webComponent : </h2>
         Il se peut qu'il manque des opérations dans les exemples suivants, n'hésitez pas à consulter le code
         <a href="https://github.com/BordyV/webcomponent_video">github</a>
         <p>Exemple d'utilisation : </p>
-        <pre><code class="language-html">   &lt;my-player id="player" width-size="50%" 
-            controller-video="true" controller-canvas="true" controller-audio="true"
+        <pre><code class="language-html">   &lt;my-player id="player" width-size="50%" start-second="20"
+            controller-video="true" controller-canvas="true" controller-audio="true" 
             keyboard-listener="false" src="PathToTheVideo/video.mp4"&gt;&lt;/my-player&gt;</code></pre>
         <details>
             <summary>
@@ -117,6 +118,8 @@
                         <li>Valeur par défaut : <b>true </b> </li>
                         <li>Valeurs possibles : <b>true / false</b> </li>
                     </ul>
+                </li><br>
+                <li><b>start-second</b> - <b>Non obligatoire </b> - Secondes de départ de la vidéo
                 </li><br>
                 <li><b>src</b> - <b>Obligatoire </b> - Source de la vidéo
                 </li>
@@ -166,7 +169,27 @@
             <summary>
                 Opérations audio :<span id="aideDetails"> (cliquer pour ouvrir)</span>
             </summary>
-
+            <button onclick="changeVolume()">changeVolume(<input type="number" id="changeVolumeInput" min="0" max="1"
+                    placeholder="de 0 à 1">)
+            </button>
+            <button onclick="changeBalance()">changeBalance(<input type="number" id="changeBalanceInput" min="-1"
+                    max="1" placeholder="de -1 à 1">)
+            </button>
+            <button onclick="changeMasterGain()">changeMasterGain(<input type="number" id="changeMasterGainInput"
+                    min="0" max="10" placeholder="de 0 à 10">)
+            </button>
+            <button onclick="changeGain()">changeGain(<input type="number" id="changeGainInput" min="-30" max="30"
+                    placeholder="-30 à 30">, <select name="changeGainSelect" id="changeGainSelect"
+                    title="numéro gain de gauche a droite ">
+                    <option value="0" selected="selected">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>)
+            </button>
+            changeGain(sliderVal, nbFilter)
         </details>
 
         <details open="true">
@@ -212,6 +235,10 @@
         let goToSecondInput = 0;
         let setWidthSizeWebComponentInput = " 65 %";
         let changeSourceInput;
+        let changeVolumeInput;
+        let changeBalanceInput;
+        let changeMasterGainInput;
+        let changeGainInput;
 
         document.querySelector("#avanceXInput").oninput = (event) => {
             avanceXInput = event.target.value;
@@ -235,6 +262,18 @@
         }
         document.querySelector("#changeSourceInput").oninput = (event) => {
             changeSourceInput = event.target.value;
+        }
+        document.querySelector("#changeVolumeInput").oninput = (event) => {
+            changeVolumeInput = event.target.value;
+        }
+        document.querySelector("#changeBalanceInput").oninput = (event) => {
+            changeBalanceInput = event.target.value;
+        }
+        document.querySelector("#changeMasterGainInput").oninput = (event) => {
+            changeMasterGainInput = event.target.value;
+        }
+        document.querySelector("#changeGainInput").oninput = (event) => {
+            changeGainInput = event.target.value;
         }
 
         const p = document.querySelector("#player");
@@ -272,6 +311,18 @@
         function goToSecond() {
             p.goToSecond(goToSecondInput);
         }
+        function changeVolume() {
+            p.changeVolume(changeVolumeInput);
+        }
+        function changeBalance() {
+            p.changeBalance(changeBalanceInput);
+        }
+        function changeMasterGain() {
+            p.changeMasterGain(changeMasterGainInput);
+        }
+        function changeGain() {
+            p.changeGain(changeGainInput, document.querySelector("#changeGainSelect").value);
+        }
         function togglePictureInPicture() {
             p.togglePictureInPicture();
         }
@@ -287,7 +338,6 @@
         function activeEcouteurKeyboard() {
             p.activeEcouteurKeyboard();
         }
-
         function disabledEcouteurKeyBoard() {
             p.disabledEcouteurKeyBoard();
         }

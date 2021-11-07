@@ -233,8 +233,10 @@ class MyVideoPlayer extends HTMLElement {
         this.filters = [];
 
         // récupération des attributs HTML
-        this.player.src = this.getAttribute("src");
+        this.changeSource(this.getAttribute("src"));
         let widthSize = this.getAttribute("width-size");
+        let startAt = this.getAttribute("start-second");
+        this.goToSecond(startAt);
 
         this.setWidthSizeWebComponent(widthSize);
 
@@ -542,8 +544,6 @@ class MyVideoPlayer extends HTMLElement {
         if (isFinite(value)) {
             this.filters[nbFilter].gain.value = value;
             this.shadowRoot.querySelector("#gain" + nbFilter).value = value;
-
-
         }
     }
     changeMasterGain(sliderVal) {
