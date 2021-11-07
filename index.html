@@ -4,6 +4,9 @@
     <title>Mon premier web component</title>
     <meta charset="utf-8">
     <script src="./monLecteurVideo/index.js" type="module"></script>
+    <link rel="stylesheet" href="./lib/styles/default.min.css">
+    <script src="./lib/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 
 <body>
@@ -35,6 +38,26 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+
+        #ExempleApi b {
+            color: #b10e0e;
+        }
+
+        summary {
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        details {
+            margin-bottom: 1%;
+            margin-top: 1%;
+        }
+
+        #aideDetails {
+            font-size: 15px;
+            font-weight: lighter;
+        }
     </style>
     <!--les valeurs actuellement à true sont pas nécessaire car les fonctionnalités sont activés de bases
         on pourrait les enlever et ça ne changera pas. 
@@ -45,22 +68,135 @@
     </my-player>
     <div id="ExempleApi">
         <h2> API du webComponent : </h2>
-        <h3> opérations video : </h3>
-        <button onclick="play()">play()</button>
-        <button onclick="pause()">pause()</button>
-        <button onclick="playpause()">playpause() </button>
-        <button onclick="avance10()">avance10() </button>
-        <button onclick="avanceX()">avanceX(<input type="number" id="avanceXInput" placeholder="secondes">) </button>
-        <button onclick="recule10()">recule10() </button>
-        <button onclick="reculeX()">reculeX(<input type="number" id="reculeXInput" placeholder="secondes">) </button>
-        <button onclick="openInfoModal()">openInfoModal() </button>
-        <button onclick="closeModal()">closeModal() </button>
-        <button onclick="changeVitesse()">changeVitesse(<input type="number" id="changeVitesseInput"
-                placeholder="vitesse">)
-        </button>
-        <button onclick="goToSecond()">goToSecond(<input type="number" id="goToSecondInput" placeholder="secondes">)
-        </button>
+        Il se peut qu'il manque des opérations dans les exemples suivants, n'hésitez pas à consulter le code
+        <a href="https://github.com/BordyV/webcomponent_video">github</a>
+        <p>Exemple d'utilisation : </p>
+        <pre><code class="language-html">   &lt;my-player id="player" width-size="50%" 
+            controller-video="true" controller-canvas="true" controller-audio="true"
+            keyboard-listener="false" src="PathToTheVideo/video.mp4"&gt;&lt;/my-player&gt;</code></pre>
+        <details>
+            <summary>
+                définition des attributs : <span id="aideDetails">(cliquer pour ouvrir)</span>
+            </summary>
+            <p>
+            <ul>
+                <li><b>width-size</b> - <b>Non obligatoire</b> - Permet de régler la taille du component</li>
+                <ul>
+                    <li>Valeur par défaut : <b>65% </b> </li>
+                </ul>
 
+                <br>
+                <li><b>controller-video</b> - <b>Non obligatoire</b> - Permet d'afficher les controllers vidéo
+                    du
+                    component
+                    <ul>
+                        <li>Valeur par défaut : <b>true </b> </li>
+                        <li>Valeurs possibles : <b>true / false</b> </li>
+                    </ul>
+                </li>
+                <br>
+                <li><b>controller-canvas</b> - <b>Non obligatoire</b> - Permet d'afficher le canvas du spectre
+                    audio du component
+                    <ul>
+                        <li>Valeur par défaut : <b>true </b> </li>
+                        <li>Valeurs possibles : <b>true / false</b> </li>
+                    </ul>
+                </li>
+                <br>
+                <li><b>controller-audio</b> - <b>Non obligatoire</b>- Permet d'afficher les controllers audio
+                    du
+                    component
+                    <ul>
+                        <li>Valeur par défaut : <b>true </b> </li>
+                        <li>Valeurs possibles : <b>true / false</b> </li>
+                    </ul>
+                </li><br>
+                <li><b>keyboard-listener</b> - <b>Non obligatoire</b> - Permet d'activer les commandes clavier du web
+                    component
+                    <ul>
+                        <li>Valeur par défaut : <b>true </b> </li>
+                        <li>Valeurs possibles : <b>true / false</b> </li>
+                    </ul>
+                </li><br>
+                <li><b>src</b> - <b>Obligatoire </b> - Source de la vidéo
+                </li>
+
+            </ul>
+            </p>
+        </details>
+
+        <details>
+            <summary>
+                Touche possible avec les commandes claviers :<span id="aideDetails"> (cliquer pour ouvrir)</span>
+            </summary>
+            <p>
+            <ul>
+                <li><b>espace</b> - met la vidéo en pause ou en play en fonction de son état</li>
+                <li><b>M</b> - permetde couper le son de la vidéo</li>
+                <li><b>D ou →</b> - permet d'avancer la vidéo de 10 secondes</li>
+                <li><b>Q ou ←</b> - permet de reculer la vidéo de 10 secondes</li>
+                <li><b>I</b> - permet d'afficher les informations de la vidéo</li>
+            </ul>
+            </p>
+        </details>
+
+        <details open="true">
+            <summary>
+                Opérations video :<span id="aideDetails"> (cliquer pour ouvrir)</span>
+            </summary>
+            <button onclick="play()">play()</button>
+            <button onclick="pause()">pause()</button>
+            <button onclick="playpause()">playpause() </button>
+            <button onclick="avance10()">avance10() </button>
+            <button onclick="avanceX()">avanceX(<input type="number" id="avanceXInput" placeholder="secondes">)
+            </button>
+            <button onclick="recule10()">recule10() </button>
+            <button onclick="reculeX()">reculeX(<input type="number" id="reculeXInput" placeholder="secondes">)
+            </button>
+            <button onclick="openInfoModal()">openInfoModal() </button>
+            <button onclick="closeModal()">closeModal() </button>
+            <button onclick="changeVitesse()">changeVitesse(<input type="number" id="changeVitesseInput"
+                    placeholder="vitesse">)
+            </button>
+            <button onclick="goToSecond()">goToSecond(<input type="number" id="goToSecondInput" placeholder="secondes">)
+            </button>
+        </details>
+
+        <details open="true">
+            <summary>
+                Opérations audio :<span id="aideDetails"> (cliquer pour ouvrir)</span>
+            </summary>
+
+        </details>
+
+        <details open="true">
+            <summary>
+                Autres opérations :<span id="aideDetails"> (cliquer pour ouvrir)</span>
+            </summary>
+            <button onclick="togglePictureInPicture()">togglePictureInPicture()</button>
+            <button onclick="setWidthSizeWebComponent()">setWidthSizeWebComponent(<input
+                    id="setWidthSizeWebComponentInput" placeholder="taille + unité (ex : 800 px)">)
+            </button>
+            <button onclick="changeSource()">changeSource(<input id="changeSourceInput"
+                    placeholder="lien de la vidéo (source)">)
+            </button>
+            <button onclick="setDisplayController()">setDisplayController(
+                <select name="controllerVideo" id="controllerVideo" title="controllerVideo">
+                    <option value="false" selected="selected">false</option>
+                    <option value="true">true</option>
+                </select>,
+                <select name="controllerCanvas" id="controllerCanvas" title="controllerCanvas">
+                    <option value="false">false</option>
+                    <option value="true" selected="selected">true</option>
+                </select>,
+                <select name="controllerAudio" id="controllerAudio" title="controllerAudio">
+                    <option value="false" selected="selected">false</option>
+                    <option value="true">true</option>
+                </select>)
+            </button>
+            <button onclick="activeEcouteurKeyboard()">activeEcouteurKeyboard()</button>
+            <button onclick="disabledEcouteurKeyBoard()">disabledEcouteurKeyBoard()</button>
+        </details>
 
     </div>
     <script>
@@ -74,6 +210,8 @@
         let reculeXInput = 0;
         let changeVitesseInput = 1;
         let goToSecondInput = 0;
+        let setWidthSizeWebComponentInput = " 65 %";
+        let changeSourceInput;
 
         document.querySelector("#avanceXInput").oninput = (event) => {
             avanceXInput = event.target.value;
@@ -86,6 +224,12 @@
         }
         document.querySelector("#goToSecondInput").oninput = (event) => {
             goToSecondInput = event.target.value;
+        }
+        document.querySelector("#setWidthSizeWebComponentInput").oninput = (event) => {
+            setWidthSizeWebComponentInput = event.target.value;
+        }
+        document.querySelector("#changeSourceInput").oninput = (event) => {
+            changeSourceInput = event.target.value;
         }
 
         const p = document.querySelector("#player");
@@ -122,6 +266,25 @@
         }
         function goToSecond() {
             p.goToSecond(goToSecondInput);
+        }
+        function togglePictureInPicture() {
+            p.togglePictureInPicture();
+        }
+        function setWidthSizeWebComponent() {
+            p.setWidthSizeWebComponent(setWidthSizeWebComponentInput);
+        }
+        function changeSource() {
+            p.changeSource(changeSourceInput);
+        }
+        function setDisplayController() {
+            p.setDisplayController(document.querySelector("#controllerVideo").value, document.querySelector("#controllerCanvas").value, document.querySelector("#controllerAudio").value);
+        }
+        function activeEcouteurKeyboard() {
+            p.activeEcouteurKeyboard();
+        }
+
+        function disabledEcouteurKeyBoard() {
+            p.disabledEcouteurKeyBoard();
         }
     </script>
 </body>

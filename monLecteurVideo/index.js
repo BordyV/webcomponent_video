@@ -245,10 +245,10 @@ class MyVideoPlayer extends HTMLElement {
         // déclarer les écouteurs sur les boutons
         this.definitEcouteurs();
         //on active les ecouteurs keyboard par défaut 
-        this.addEcouteurKeyboard();
+        this.activeEcouteurKeyboard();
         let keyboardListener = this.getAttribute("keyboard-listener");
         if (keyboardListener === 'false') {
-            this.deleteEcouteurKeyBoard();
+            this.disabledEcouteurKeyBoard();
         }
 
         this.init();
@@ -342,7 +342,7 @@ class MyVideoPlayer extends HTMLElement {
         // }
 
     }
-    addEcouteurKeyboard() {
+    activeEcouteurKeyboard() {
         window.onkeyup = (e) => {
             //keyCode = espace
             if (e.keyCode == 32) {
@@ -366,7 +366,7 @@ class MyVideoPlayer extends HTMLElement {
             }
         }
     }
-    deleteEcouteurKeyBoard() {
+    disabledEcouteurKeyBoard() {
         window.onkeyup = () => { }
     }
 
@@ -581,6 +581,9 @@ class MyVideoPlayer extends HTMLElement {
 
     setWidthSizeWebComponent(widthSize) {
         this.shadowRoot.querySelector("#figureVideo").style.width = widthSize;
+    }
+    changeSource(src) {
+        this.player.Src = src;
     }
 }
 
