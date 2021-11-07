@@ -493,7 +493,7 @@ class MyVideoPlayer extends HTMLElement {
             let minutes = Math.floor(this.player.currentTime / 60);
             let seconds = this.player.currentTime - minutes * 60;
 
-            progress.value = Math.round((this.shadowRoot.querySelector("#player").currentTime / this.shadowRoot.querySelector("#player").duration) * 100);
+            progress.value = Math.round((this.player.currentTime / this.player.duration) * 100);
             timer.innerHTML = minutes + "min" +
                 Math.round(seconds);
         });
@@ -583,7 +583,18 @@ class MyVideoPlayer extends HTMLElement {
         this.shadowRoot.querySelector("#figureVideo").style.width = widthSize;
     }
     changeSource(src) {
-        this.player.Src = src;
+        if (typeof src === 'string' || src instanceof String) {
+            let video = document.createElement('video');
+
+            video.onloadedmetadata = () => {
+                this.player.src = src;
+
+            }
+            video.onerror = () => {
+                alert("Votre vidéo n'existe pas ou n'est pas du bon type  (mp4, webm, ogg). Veuillez vérifier");
+            }
+            video.src = src;
+        }
     }
 }
 

@@ -228,6 +228,11 @@
         document.querySelector("#setWidthSizeWebComponentInput").oninput = (event) => {
             setWidthSizeWebComponentInput = event.target.value;
         }
+        document.querySelector("input").onclick = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+        }
         document.querySelector("#changeSourceInput").oninput = (event) => {
             changeSourceInput = event.target.value;
         }
