@@ -300,25 +300,12 @@ class MyVideoPlayer extends HTMLElement {
             var value = event.target.value;
             this.changeGain(value, 0);
         }
-        this.shadowRoot.querySelector("#gain1").oninput = (event) => {
-            var value = event.target.value;
-            this.changeGain(value, 1);
-        }
-        this.shadowRoot.querySelector("#gain2").oninput = (event) => {
-            var value = event.target.value;
-            this.changeGain(value, 2);
-        }
-        this.shadowRoot.querySelector("#gain3").oninput = (event) => {
-            var value = event.target.value;
-            this.changeGain(value, 3);
-        }
-        this.shadowRoot.querySelector("#gain4").oninput = (event) => {
-            var value = event.target.value;
-            this.changeGain(value, 4);
-        }
-        this.shadowRoot.querySelector("#gain5").oninput = (event) => {
-            var value = event.target.value;
-            this.changeGain(value, 5);
+        for (let i = 0; i <= 5; i++) {
+            debugger
+            this.shadowRoot.querySelector("#gain" + i).oninput = (event) => {
+                var value = event.target.value;
+                this.changeGain(value, i);
+            }
         }
         this.shadowRoot.querySelector("#masterGain").oninput = (event) => {
             var value = event.target.value;
@@ -327,21 +314,6 @@ class MyVideoPlayer extends HTMLElement {
         this.shadowRoot.querySelector("#pictureInPicture").onclick = (event) => {
             this.togglePictureInPicture();
         }
-        // window.onclick = (event) => {
-        //     let modal = this.shadowRoot.querySelector("#myModal");
-
-        //     //isModalOpen repasse à false car l'event est appelé 1 fois avant qu'on souhaite le fermer
-        //     //une fois sur le clique du bouton info 
-        //     console.log(event.target);
-        //     console.log("test", this);
-        //     console.log(event.target == modal);
-
-        //     if (modal && event.target == this && isModalOpen) {
-        //         isModalOpen = false;
-        //         this.shadowRoot.querySelector("#myModal").style.display = "none";
-        //     }
-
-        // }
 
     }
     activeEcouteurKeyboard() {
