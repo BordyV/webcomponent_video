@@ -301,7 +301,6 @@ class MyVideoPlayer extends HTMLElement {
             this.changeGain(value, 0);
         }
         for (let i = 0; i <= 5; i++) {
-            debugger
             this.shadowRoot.querySelector("#gain" + i).oninput = (event) => {
                 var value = event.target.value;
                 this.changeGain(value, i);
