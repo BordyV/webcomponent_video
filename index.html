@@ -76,8 +76,9 @@
                 Exemple d'utilisation :<span id="aideDetails"> (cliquer pour ouvrir)</span>
             </summary>
             <p>
-                Télécharger le dossier du projet git <a
-                    href="https://github.com/BordyV/webcomponent_video/tree/main/monLecteurVideo">monLecteurVideo</a> et
+                Télécharger le dossier <a
+                    href="https://github.com/BordyV/webcomponent_video/tree/main/monLecteurVideo">monLecteurVideo</a> du
+                projet git et
                 l'ajouter à votre projet puis :
             <pre><code class="language-html">&lt;script src="./monLecteurVideo/index.js" type="module"&gt;&lt;/script&gt;</code></pre>
             <pre><code class="language-html">   &lt;my-player id="player" width-size="50%" start-second="20"
@@ -146,11 +147,13 @@
             </summary>
             <p>
             <ul>
-                <li><b>espace</b> - met la vidéo en pause ou en play en fonction de son état</li>
+                <li><b>espace </b> - met la vidéo en pause ou en lecture en fonction de son état</li>
                 <li><b>M</b> - permetde couper le son de la vidéo</li>
                 <li><b>D ou →</b> - permet d'avancer la vidéo de 10 secondes</li>
                 <li><b>Q ou ←</b> - permet de reculer la vidéo de 10 secondes</li>
                 <li><b>I</b> - permet d'afficher les informations de la vidéo</li>
+                <li><b>clique sur la vidéo </b> - met la vidéo en pause ou en lecture en fonction de son état</li>
+
             </ul>
             </p>
         </details>
@@ -201,7 +204,6 @@
                     <option value="5">5</option>
                 </select>)
             </button>
-            changeGain(sliderVal, nbFilter)
         </details>
 
         <details open="true">
