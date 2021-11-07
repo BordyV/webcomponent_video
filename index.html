@@ -71,10 +71,22 @@
         <h2> API du webComponent : </h2>
         Il se peut qu'il manque des opérations dans les exemples suivants, n'hésitez pas à consulter le code
         <a href="https://github.com/BordyV/webcomponent_video">github</a>
-        <p>Exemple d'utilisation : </p>
-        <pre><code class="language-html">   &lt;my-player id="player" width-size="50%" start-second="20"
-            controller-video="true" controller-canvas="true" controller-audio="true" 
-            keyboard-listener="false" src="PathToTheVideo/video.mp4"&gt;&lt;/my-player&gt;</code></pre>
+        <details>
+            <summary>
+                Exemple d'utilisation :<span id="aideDetails"> (cliquer pour ouvrir)</span>
+            </summary>
+            <p>
+                Télécharger le dossier du projet git <a
+                    href="https://github.com/BordyV/webcomponent_video/tree/main/monLecteurVideo">monLecteurVideo</a> et
+                l'ajouter à votre projet puis :
+            <pre><code class="language-html">&lt;script src="./monLecteurVideo/index.js" type="module"&gt;&lt;/script&gt;</code></pre>
+            <pre><code class="language-html">   &lt;my-player id="player" width-size="50%" start-second="20"
+                controller-video="true" controller-canvas="true" controller-audio="true" 
+                keyboard-listener="false" src="PathToTheVideo/video.mp4"&gt;&lt;/my-player&gt;</code></pre>
+
+            </p>
+        </details>
+
         <details>
             <summary>
                 définition des attributs : <span id="aideDetails">(cliquer pour ouvrir)</span>
