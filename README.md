@@ -17,27 +17,27 @@ Télécharger le dossier [monLecteurVideo](https://github.com/BordyV/webcomponen
 ````
 ## définition des attributs :
 - **width-size** - **Non obligatoire** - Permet de régler la taille du component
-- - Valeur par défaut : **65%**
+    - Valeur par défaut : **65%**
 <br><br>
 
 - **controller-video** - **Non obligatoire** - Permet d'afficher les controllers vidéo du component
-- - Valeur par défaut : **true**
-- - Valeurs possibles : **true / false**
+    - Valeur par défaut : **true**
+    - Valeurs possibles : **true / false**
 <br><br>
 
 - **controller-canvas** - **Non obligatoire** - Permet d'afficher le canvas du spectre audio du component
-- - Valeur par défaut : **true**
-- - Valeurs possibles : **true / false**
+    - Valeur par défaut : **true**
+    - Valeurs possibles : **true / false**
 <br><br>
 
 - **controller-audio** - **Non obligatoire** - Permet d'afficher les controllers audio du component
-- - Valeur par défaut : **true**
-- - Valeurs possibles : **true / false**
+    - Valeur par défaut : **true**
+    - Valeurs possibles : **true / false**
 <br><br>
 
 - **keyboard-listener** - **Non obligatoire** - Permet d'activer les commandes clavier du web component
-- - Valeur par défaut : **true**
-- - Valeurs possibles : **true / false**
+    - Valeur par défaut : **true**
+    - Valeurs possibles : **true / false**
 <br><br>
 
 - **start-second** - **Non obligatoire** - Secondes de départ de la vidéo
