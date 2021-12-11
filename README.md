@@ -1,5 +1,7 @@
 # webcomponent_video
 
+Ce projet est un projet mettant en oeuvre le principe de webcomponent afin d'obtenir un player video personnalisé avec une api évoluée.
+
 Exemple d'utilisation en ligne :
 https://valentinbordy.fr/webcomponent/
 
